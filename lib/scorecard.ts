@@ -1,4 +1,4 @@
-const BASE_URL = "https://api.data.gov/data/1.0/schools.json";
+const BASE_URL = "https://api.data.gov/ed/collegescorecard/v1/schools.json";
 
 const FIELDS = [
   "id",
@@ -80,6 +80,7 @@ export async function searchSchools(query: string): Promise<ScorecardSchool[]> {
   const url = new URL(BASE_URL);
   url.searchParams.set("api_key", apiKey);
   url.searchParams.set("school.name", query);
+  url.searchParams.set("school.degrees_awarded.highest__range", "3,4"); // 4-year universities only
   url.searchParams.set("fields", FIELDS);
   url.searchParams.set("per_page", "10");
   url.searchParams.set("_sort", "latest.admissions.admission_rate.overall");

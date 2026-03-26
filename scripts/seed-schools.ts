@@ -18,7 +18,7 @@ const supabase = createClient(
 );
 
 const SCORECARD_KEY = process.env.COLLEGE_SCORECARD_API_KEY!;
-const BASE_URL = "https://api.data.gov/data/1.0/schools.json";
+const BASE_URL = "https://api.data.gov/ed/collegescorecard/v1/schools.json";
 
 const FIELDS = [
   "id",
