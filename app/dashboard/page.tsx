@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import CollegeTable from "@/components/college-table";
 import TopBar from "@/components/top-bar";
+import FeedbackButton from "@/components/feedback-button";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -23,8 +24,10 @@ export default async function DashboardPage() {
       `
       id, attainability, app_type, status, notes, added_at,
       schools (
-        id, name, city, state, school_type,
-        acceptance_rate, sat_25th, sat_75th, avg_gpa, test_policy, net_price
+        id, name, city, state, school_type, setting, enrollment,
+        acceptance_rate, sat_25th, sat_75th, avg_gpa, test_policy,
+        net_price, tuition_in_state, tuition_out_of_state,
+        grad_rate, median_earnings, website_url
       )
     `
     )
@@ -34,6 +37,7 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF9" }}>
       <TopBar />
+      <FeedbackButton />
       <main className="max-w-[1600px] mx-auto px-6 pt-6 pb-16">
         <CollegeTable
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -7,17 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import TopBar from "@/components/top-bar";
-import { classify } from "@/lib/attainability";
-
 const COLUMN_OPTIONS = [
   { id: "location", label: "Location" },
   { id: "type", label: "School Type (Public/Private)" },
-  { id: "attainability", label: "Attainability (Reach/Target/Safety)" },
+  { id: "setting", label: "Campus Setting (City/Suburb/Rural)" },
+  { id: "enrollment", label: "Enrollment Size" },
+  { id: "attainability", label: "Fit (Reach/Target/Safety)" },
   { id: "acceptance_rate", label: "Acceptance Rate" },
   { id: "sat_range", label: "SAT Range" },
-  { id: "avg_gpa", label: "Average GPA" },
   { id: "test_policy", label: "Test Policy" },
-  { id: "net_tuition", label: "Net Tuition" },
+  { id: "net_tuition", label: "Net Price / Tuition" },
   { id: "app_type", label: "Application Type (EA/ED/RD)" },
   { id: "status", label: "Application Status" },
   { id: "notes", label: "Notes" },
@@ -77,31 +76,6 @@ export default function SettingsPage() {
       column_preferences: columns,
     }).eq("id", user.id);
 
-    // Recompute attainability for all user's schools
-    const { data: userSchools } = await supabase
-      .from("user_schools")
-      .select("id, school_id, schools(sat_25th, sat_75th, avg_gpa, acceptance_rate)")
-      .eq("user_id", user.id);
-
-    if (userSchools && (newSat || newGpa)) {
-      const actToSat: Record<number, number> = {
-        36: 1590, 35: 1540, 34: 1500, 33: 1460, 32: 1430, 31: 1400,
-        30: 1370, 29: 1340, 28: 1310, 27: 1280, 26: 1240, 25: 1210,
-        24: 1180, 23: 1140, 22: 1110, 21: 1080, 20: 1040, 19: 1010,
-      };
-      const satForClassify = newSat ?? (newAct ? actToSat[newAct] ?? null : null);
-
-      for (const row of userSchools) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const school = (row as any).schools;
-        const attainability = classify(satForClassify, newGpa, school);
-        await supabase
-          .from("user_schools")
-          .update({ attainability })
-          .eq("id", row.id);
-      }
-    }
-
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -141,7 +115,7 @@ export default function SettingsPage() {
             Academic Profile
           </h2>
           <p className="text-xs mb-5" style={{ color: "#78716C" }}>
-            Used to auto-calculate your Reach, Target, and Safety schools.
+            Stored with your profile for reference.
           </p>
 
           <div className="space-y-4 max-w-xs">

@@ -48,20 +48,14 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAFAF9" }}>
       <div className="w-full max-w-sm">
         {/* Logo / brand */}
-        <div className="mb-10 text-center">
-          <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-4" style={{ backgroundColor: "#1E3A8A" }}>
-            <span className="text-white text-sm font-semibold">CL</span>
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight" style={{ color: "#1A1A1A" }}>
-            College List
+        <div className="mb-8 text-center">
+          <h1 className="text-5xl tracking-tight" style={{ fontFamily: "var(--font-brand)", fontWeight: 700 }}>
+            <span style={{ color: "#1A1A1A" }}>College</span><span style={{ color: "#1E3A8A" }}>Roster</span>
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "#78716C" }}>
-            {mode === "signin" ? "Welcome back." : "Create your account."}
-          </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-xl border p-8" style={{ borderColor: "#E7E5E4" }}>
+        <div className="p-2">
           {/* Google OAuth */}
           <button
             onClick={handleGoogleAuth}
@@ -94,7 +88,7 @@ export default function LoginPage() {
               <div className="w-full border-t" style={{ borderColor: "#E7E5E4" }} />
             </div>
             <div className="relative flex justify-center">
-              <span className="px-3 text-xs" style={{ backgroundColor: "white", color: "#78716C" }}>
+              <span className="px-3 text-xs" style={{ backgroundColor: "#FAFAF9", color: "#78716C" }}>
                 or
               </span>
             </div>

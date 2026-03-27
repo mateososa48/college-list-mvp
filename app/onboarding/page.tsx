@@ -60,6 +60,12 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAFAF9" }}>
       <div className="w-full max-w-lg px-4">
+        {/* Wordmark */}
+        <div className="text-center mb-8">
+          <span className="text-4xl tracking-tight" style={{ fontFamily: "var(--font-brand)", fontWeight: 700, color: "#1A1A1A" }}>College</span>
+          <span className="text-4xl tracking-tight" style={{ fontFamily: "var(--font-brand)", fontWeight: 700, color: "#1E3A8A" }}>Roster</span>
+        </div>
+
         {/* Progress dots */}
         <div className="flex justify-center gap-2 mb-10">
           {[1, 2].map((s) => (

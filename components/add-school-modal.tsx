@@ -46,13 +46,20 @@ export default function AddSchoolModal({ onSchoolAdded }: AddSchoolModalProps) {
   const debouncedQuery = useDebounce(query, 300);
 
   const search = useCallback(async (q: string) => {
-    if (q.length < 2) { setResults([]); return; }
+    if (q.length < 2) { setResults([]); setError(null); return; }
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch(`/api/schools/search?q=${encodeURIComponent(q)}`);
       const data = await res.json();
-      setResults(data.results ?? []);
-    } catch {
+      if (!res.ok) {
+        setError(data.error ?? `Search failed (${res.status})`);
+        setResults([]);
+      } else {
+        setResults(data.results ?? []);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Search failed");
       setResults([]);
     } finally {
       setLoading(false);
@@ -100,7 +107,7 @@ export default function AddSchoolModal({ onSchoolAdded }: AddSchoolModalProps) {
     <>
       <Button
         onClick={() => setOpen(true)}
-        className="h-8 px-3 text-xs font-medium flex items-center gap-1.5"
+        className="h-8 px-4 text-xs font-semibold flex items-center gap-1.5 rounded-full"
         style={{ backgroundColor: "#1E3A8A" }}
       >
         <PlusIcon className="w-3.5 h-3.5" />
@@ -132,6 +139,15 @@ export default function AddSchoolModal({ onSchoolAdded }: AddSchoolModalProps) {
 
           {/* Results */}
           <div className="max-h-80 overflow-y-auto">
+            {error && (
+              <div
+                className="px-4 py-2.5 text-xs border-b"
+                style={{ borderColor: "#E7E5E4", color: "#DC2626", backgroundColor: "#FEF2F2" }}
+              >
+                {error}
+              </div>
+            )}
+
             {loading && (
               <div className="flex justify-center py-8">
                 <div className="w-5 h-5 border-2 border-stone-200 border-t-blue-900 rounded-full animate-spin" />
@@ -179,14 +195,6 @@ export default function AddSchoolModal({ onSchoolAdded }: AddSchoolModalProps) {
             ))}
           </div>
 
-          {error && (
-            <div
-              className="px-4 py-2.5 text-xs border-t"
-              style={{ borderColor: "#E7E5E4", color: "#DC2626" }}
-            >
-              {error}
-            </div>
-          )}
         </DialogContent>
       </Dialog>
     </>
