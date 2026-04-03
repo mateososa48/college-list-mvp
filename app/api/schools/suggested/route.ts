@@ -95,7 +95,7 @@ function applyExclusion(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
   if (excludedIds.size === 0) return query;
-  return query.not("id", "in", `(${[...excludedIds].join(",")})`);
+  return query.not("id", "in", `(${Array.from(excludedIds).join(",")})`);
 }
 
 async function fetchStateCategory(
@@ -222,9 +222,9 @@ export async function GET(req: NextRequest) {
     }
     let dominantState: string | null = null;
     let maxCount = 0;
-    for (const [state, count] of stateCounts) {
+    stateCounts.forEach((count, state) => {
       if (count > maxCount) { maxCount = count; dominantState = state; }
-    }
+    });
 
     const effectiveSat = profile?.sat_score ?? estimateSatFromAct(profile?.act_score ?? null);
 
@@ -271,13 +271,12 @@ export async function GET(req: NextRequest) {
 
     // Deduplicate across categories
     const seenIds = new Set<string>();
-    function dedup(schools: SchoolRow[]): SchoolRow[] {
-      return schools.filter(s => {
+    const dedup = (schools: SchoolRow[]): SchoolRow[] =>
+      schools.filter(s => {
         if (seenIds.has(s.id)) return false;
         seenIds.add(s.id);
         return true;
       });
-    }
 
     const categories: SuggestionCategory[] = [];
 
