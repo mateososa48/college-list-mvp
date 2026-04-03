@@ -59,8 +59,8 @@ export default function LoginPage() {
           {/* Google OAuth */}
           <button
             onClick={handleGoogleAuth}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors hover:bg-stone-50"
-            style={{ borderColor: "#E7E5E4", color: "#1A1A1A" }}
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border border-[#E7E5E4] text-sm font-medium transition-colors hover:bg-stone-50"
+            style={{ color: "#1A1A1A", backgroundColor: "#FFFFFF" }}
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path
@@ -103,7 +103,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="h-10 text-sm"
+              className="h-10 text-sm bg-white text-[#1A1A1A] border-[#E7E5E4] placeholder:text-[#A8A29E]"
             />
             <Input
               type="password"
@@ -112,7 +112,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete={mode === "signin" ? "current-password" : "new-password"}
-              className="h-10 text-sm"
+              className="h-10 text-sm bg-white text-[#1A1A1A] border-[#E7E5E4] placeholder:text-[#A8A29E]"
             />
 
             {error && (
