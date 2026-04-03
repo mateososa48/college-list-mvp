@@ -215,7 +215,7 @@ export default function AddSchoolModal({
   externalOpen,
   onExternalOpenConsumed,
   existingSchoolIds = [],
-  existingAcceptanceRates = [],
+  existingAcceptanceRates: _existingAcceptanceRates = [],
   onExplore,
   hideForExplore = false,
 }: AddSchoolModalProps) {

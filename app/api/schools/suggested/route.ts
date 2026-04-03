@@ -188,7 +188,7 @@ export async function GET(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     let profile: ProfileRow | null = null;
-    let listSchools: SchoolRow[] = [];
+    const listSchools: SchoolRow[] = [];
 
     if (user) {
       const [profileResult, listResult] = await Promise.all([
