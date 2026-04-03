@@ -496,7 +496,7 @@ export default function AddSchoolModal({
         Add School
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={setOpen} modal={!hideForExplore}>
         <DialogContent
           className={`p-0 gap-0 overflow-hidden flex flex-col max-sm:!w-screen max-sm:!h-screen max-sm:!max-w-none max-sm:!rounded-none max-sm:!translate-x-0 max-sm:!translate-y-0 max-sm:!top-0 max-sm:!left-0 transition-opacity duration-150${hideForExplore ? " opacity-0 pointer-events-none" : ""}`}
           overlayClassName={hideForExplore ? "opacity-0 pointer-events-none" : undefined}
