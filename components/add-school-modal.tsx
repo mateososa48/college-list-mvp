@@ -215,7 +215,8 @@ export default function AddSchoolModal({
   externalOpen,
   onExternalOpenConsumed,
   existingSchoolIds = [],
-  existingAcceptanceRates: _existingAcceptanceRates = [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  existingAcceptanceRates = [],
   onExplore,
   hideForExplore = false,
 }: AddSchoolModalProps) {
