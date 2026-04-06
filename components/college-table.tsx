@@ -833,7 +833,7 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
       if (favoriteCount >= 3) {
         if (favCapToastTimer.current) clearTimeout(favCapToastTimer.current);
         setFavCapToast(id);
-        favCapToastTimer.current = setTimeout(() => setFavCapToast(null), 2500);
+        favCapToastTimer.current = setTimeout(() => setFavCapToast(null), 1000);
         return;
       }
     }
@@ -1144,9 +1144,9 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
             <thead>
               <tr className="border-b text-left" style={{ borderColor: "var(--cr-border)", backgroundColor: "var(--cr-subtle-bg)" }}>
                 {anyFavorited && (
-                  <th className="sticky left-0 z-10" style={{ backgroundColor: "var(--cr-subtle-bg)", width: "24px", minWidth: "24px", padding: 0 }} />
+                  <th className="sticky left-0 z-10" style={{ backgroundColor: "var(--cr-subtle-bg)", width: "18px", minWidth: "18px", padding: 0 }} />
                 )}
-                <th className={`sticky z-10 ${HEADER_CELL_CLASS}`} style={{ left: anyFavorited ? "24px" : 0, color: "var(--cr-text-muted)", backgroundColor: "var(--cr-subtle-bg)", minWidth: "200px", maxWidth: "200px", width: "200px" }}>
+                <th className={`sticky z-10 ${HEADER_CELL_CLASS}`} style={{ left: anyFavorited ? "18px" : 0, color: "var(--cr-text-muted)", backgroundColor: "var(--cr-subtle-bg)", minWidth: "200px", maxWidth: "200px", width: "200px" }}>
                   <ColHeader icon={AcademicCapIcon} label="School" />
                 </th>
                 <th style={{ backgroundColor: "var(--cr-subtle-bg)", width: "1px", padding: 0 }} />
@@ -1238,14 +1238,14 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                 >
                   {/* Favorite star indicator (non-clickable, only shown when anyFavorited) */}
                   {anyFavorited && (
-                    <td className="sticky left-0 z-10 align-middle" style={{ backgroundColor: rowBaseColor, width: "24px", minWidth: "24px", padding: "0 0 0 6px" }}>
+                    <td className="sticky left-0 z-10 align-middle" style={{ backgroundColor: rowBaseColor, width: "18px", minWidth: "18px", padding: "0 0 0 4px" }}>
                       {row.is_favorite && (
-                        <StarIconSolid className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#F59E0B", pointerEvents: "none" }} />
+                        <StarIconSolid className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B", pointerEvents: "none" }} />
                       )}
                     </td>
                   )}
                   {/* School name (sticky) */}
-                  <td className="sticky z-10 pl-4 pr-2 py-1.5 align-middle" style={{ left: anyFavorited ? "24px" : 0, backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px" }}>
+                  <td className="sticky z-10 pl-4 pr-2 py-1.5 align-middle" style={{ left: anyFavorited ? "18px" : 0, backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px" }}>
                     <div className="flex items-center gap-2 min-w-0">
                       {/* Favicon logo */}
                       {row.schools.website_url && !logoErrors.has(row.id) ? (
@@ -1274,8 +1274,8 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                     </div>
                   </td>
                   {/* Explore + trash + star (not sticky) */}
-                  <td className="py-1.5 pr-1 align-middle whitespace-nowrap" style={{ width: "1px" }}>
-                    <div className="flex items-center gap-1">
+                  <td className="py-1.5 pr-2 align-middle whitespace-nowrap" style={{ width: "1px" }}>
+                    <div className="flex items-center gap-0.5">
                       <button
                         onClick={() => openPanel(row)}
                         title="Explore school"
@@ -1290,22 +1290,20 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                       <button
                         onClick={() => removeSchool(row.id)}
                         title="Remove school"
-                        className="p-0.5 rounded hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="p-1 rounded hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100 transition-opacity"
                         style={{ color: "var(--cr-text-muted)" }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = "#DC2626")}
                         onMouseLeave={(e) => (e.currentTarget.style.color = "var(--cr-text-muted)")}
                       >
                         <TrashIcon className="w-3.5 h-3.5" />
                       </button>
-                      {/* Star / unstar button */}
+                      {/* Star / unstar button — always grey */}
                       <div className="relative">
                         <button
                           onClick={() => toggleFavorite(row.id)}
                           title={row.is_favorite ? "Unstar" : "Star this school"}
-                          className="p-0.5 rounded transition-colors opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{ color: row.is_favorite ? "#F59E0B" : "var(--cr-text-muted)" }}
-                          onMouseEnter={(e) => { if (!row.is_favorite) e.currentTarget.style.color = "#F59E0B"; }}
-                          onMouseLeave={(e) => { if (!row.is_favorite) e.currentTarget.style.color = "var(--cr-text-muted)"; }}
+                          className="p-1 rounded transition-colors opacity-0 group-hover:opacity-100 transition-opacity hover:bg-stone-100 dark:hover:bg-stone-800"
+                          style={{ color: "var(--cr-text-muted)" }}
                         >
                           {row.is_favorite
                             ? <StarSlashIcon className="w-3.5 h-3.5" />
