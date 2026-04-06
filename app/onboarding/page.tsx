@@ -27,7 +27,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [gpa, setGpa] = useState("");
   const [scoreType, setScoreType] = useState<"sat" | "act">("sat");
   const [satScore, setSatScore] = useState("");
@@ -66,19 +66,43 @@ export default function OnboardingPage() {
           <span className="text-4xl tracking-tight" style={{ fontFamily: "var(--font-brand)", fontWeight: 700, color: "#1E3A8A" }}>Roster</span>
         </div>
 
-        {/* Progress dots */}
-        <div className="flex justify-center gap-2 mb-10">
-          {[1, 2].map((s) => (
-            <div
-              key={s}
-              className="h-1.5 rounded-full transition-all"
-              style={{
-                width: step === s ? "24px" : "8px",
-                backgroundColor: step >= s ? "#1E3A8A" : "#E7E5E4",
-              }}
-            />
-          ))}
-        </div>
+        {/* Progress dots — only show during steps 1 & 2 */}
+        {step > 0 && (
+          <div className="flex justify-center gap-2 mb-10">
+            {[1, 2].map((s) => (
+              <div
+                key={s}
+                className="h-1.5 rounded-full transition-all"
+                style={{
+                  width: step === s ? "24px" : "8px",
+                  backgroundColor: step >= s ? "#1E3A8A" : "#E7E5E4",
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Step 0: Welcome */}
+        {step === 0 && (
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold tracking-tight mb-2" style={{ color: "#1A1A1A" }}>
+              Welcome to CollegeRoster
+            </h2>
+            <p className="text-sm mb-8 max-w-sm mx-auto" style={{ color: "#78716C", lineHeight: 1.7 }}>
+              Build your college list, track applications, and see essay requirements — all in one place.
+            </p>
+
+            <div className="flex flex-col items-center gap-3">
+              <Button
+                onClick={() => setStep(1)}
+                className="w-full max-w-xs h-10 text-sm font-medium"
+                style={{ backgroundColor: "#1E3A8A" }}
+              >
+                Get started →
+              </Button>
+            </div>
+          </div>
+        )}
 
         {step === 1 && (
           <div>
@@ -86,7 +110,7 @@ export default function OnboardingPage() {
               Tell us about yourself
             </h2>
             <p className="text-sm mb-8" style={{ color: "#78716C" }}>
-              We use this to calculate your Reach, Target, and Safety schools automatically.
+              Optional — we use this to show relevant stats when browsing schools.
             </p>
 
             <div className="space-y-5">
@@ -102,7 +126,7 @@ export default function OnboardingPage() {
                   placeholder="e.g. 3.85"
                   value={gpa}
                   onChange={(e) => setGpa(e.target.value)}
-                  className="h-10 text-sm max-w-xs"
+                  className="h-10 text-sm max-w-xs bg-white text-[#1A1A1A] border-[#E7E5E4] placeholder:text-[#A8A29E]"
                 />
               </div>
 
@@ -113,13 +137,19 @@ export default function OnboardingPage() {
                 <div className="flex gap-2 mb-3">
                   <button
                     onClick={() => setScoreType("sat")}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${scoreType === "sat" ? "border-blue-900 text-blue-900 bg-blue-50" : "border-stone-200 text-stone-500"}`}
+                    className="px-3 py-1.5 rounded-md text-xs font-medium border transition-colors"
+                    style={scoreType === "sat"
+                      ? { borderColor: "#1E3A8A", color: "#1E3A8A", backgroundColor: "#EFF6FF" }
+                      : { borderColor: "#E7E5E4", color: "#78716C", backgroundColor: "#FFFFFF" }}
                   >
                     SAT
                   </button>
                   <button
                     onClick={() => setScoreType("act")}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${scoreType === "act" ? "border-blue-900 text-blue-900 bg-blue-50" : "border-stone-200 text-stone-500"}`}
+                    className="px-3 py-1.5 rounded-md text-xs font-medium border transition-colors"
+                    style={scoreType === "act"
+                      ? { borderColor: "#1E3A8A", color: "#1E3A8A", backgroundColor: "#EFF6FF" }
+                      : { borderColor: "#E7E5E4", color: "#78716C", backgroundColor: "#FFFFFF" }}
                   >
                     ACT
                   </button>
@@ -133,7 +163,7 @@ export default function OnboardingPage() {
                     placeholder="e.g. 1480"
                     value={satScore}
                     onChange={(e) => setSatScore(e.target.value)}
-                    className="h-10 text-sm max-w-xs"
+                    className="h-10 text-sm max-w-xs bg-white text-[#1A1A1A] border-[#E7E5E4] placeholder:text-[#A8A29E]"
                   />
                 ) : (
                   <Input
@@ -143,7 +173,7 @@ export default function OnboardingPage() {
                     placeholder="e.g. 32"
                     value={actScore}
                     onChange={(e) => setActScore(e.target.value)}
-                    className="h-10 text-sm max-w-xs"
+                    className="h-10 text-sm max-w-xs bg-white text-[#1A1A1A] border-[#E7E5E4] placeholder:text-[#A8A29E]"
                   />
                 )}
               </div>
