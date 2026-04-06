@@ -1144,9 +1144,9 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
             <thead>
               <tr className="border-b text-left" style={{ borderColor: "var(--cr-border)", backgroundColor: "var(--cr-subtle-bg)" }}>
                 {anyFavorited && (
-                  <th className="sticky left-0 z-10" style={{ backgroundColor: "var(--cr-subtle-bg)", width: "14px", minWidth: "14px", padding: 0 }} />
+                  <th className="sticky left-0 z-10" style={{ backgroundColor: "var(--cr-subtle-bg)", width: "22px", minWidth: "22px", padding: 0 }} />
                 )}
-                <th className={`sticky z-10 ${HEADER_CELL_CLASS}`} style={{ left: anyFavorited ? "14px" : 0, color: "var(--cr-text-muted)", backgroundColor: "var(--cr-subtle-bg)", minWidth: "200px", maxWidth: "200px", width: "200px" }}>
+                <th className={`sticky z-10 ${HEADER_CELL_CLASS}`} style={{ left: anyFavorited ? "22px" : 0, color: "var(--cr-text-muted)", backgroundColor: "var(--cr-subtle-bg)", minWidth: "200px", maxWidth: "200px", width: "200px" }}>
                   <ColHeader icon={AcademicCapIcon} label="School" />
                 </th>
                 <th style={{ backgroundColor: "var(--cr-subtle-bg)", width: "1px", padding: 0 }} />
@@ -1238,14 +1238,16 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                 >
                   {/* Favorite star indicator (non-clickable, only shown when anyFavorited) */}
                   {anyFavorited && (
-                    <td className="sticky left-0 z-10 align-middle" style={{ backgroundColor: rowBaseColor, width: "14px", minWidth: "14px", padding: "0 0 0 3px" }}>
-                      {row.is_favorite && (
-                        <StarIconSolid className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B", pointerEvents: "none" }} />
-                      )}
+                    <td className="sticky left-0 z-10" style={{ backgroundColor: rowBaseColor, width: "22px", minWidth: "22px", padding: 0 }}>
+                      <div className="flex items-center justify-center h-full w-full">
+                        {row.is_favorite && (
+                          <StarIconSolid className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B", pointerEvents: "none" }} />
+                        )}
+                      </div>
                     </td>
                   )}
                   {/* School name (sticky) */}
-                  <td className="sticky z-10 pl-3 pr-2 py-1.5 align-middle" style={{ left: anyFavorited ? "14px" : 0, backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px" }}>
+                  <td className="sticky z-10 pl-3 pr-2 py-1.5 align-middle" style={{ left: anyFavorited ? "22px" : 0, backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px", overflow: "hidden" }}>
                     <div className="flex items-center gap-2 min-w-0">
                       {/* Favicon logo */}
                       {row.schools.website_url && !logoErrors.has(row.id) ? (
@@ -1306,8 +1308,8 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                           style={{ color: "var(--cr-text-muted)" }}
                         >
                           {row.is_favorite
-                            ? <StarSlashIcon className="w-3.5 h-3.5" />
-                            : <StarIcon className="w-3.5 h-3.5" />
+                            ? <StarSlashIcon className="w-4 h-4" />
+                            : <StarIcon className="w-4 h-4" />
                           }
                         </button>
                         {/* Cap toast */}
