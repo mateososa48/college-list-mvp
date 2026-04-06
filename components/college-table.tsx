@@ -28,7 +28,9 @@ import {
   CheckIcon,
   XMarkIcon,
   SwatchIcon,
+  StarIcon,
 } from "@heroicons/react/24/outline";
+import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 
 const DETAIL_HINT_KEY = "clm_detail_hint_dismissed";
 
@@ -187,6 +189,7 @@ interface UserSchoolRow {
   status: Status;
   notes: string | null;
   added_at: string;
+  is_favorite: boolean;
   schools: School;
 }
 
@@ -662,6 +665,14 @@ function MobileSchoolCard({
 export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }: CollegeTableProps) {
   const supabase = createClient();
   const [rows, setRows] = useState<UserSchoolRow[]>(initialRows);
+  // Sync rows when the server re-fetches fresh data (e.g. after router.refresh())
+  const prevInitialRowsRef = useRef(initialRows);
+  useEffect(() => {
+    if (initialRows !== prevInitialRowsRef.current) {
+      prevInitialRowsRef.current = initialRows;
+      setRows(initialRows);
+    }
+  }, [initialRows]);
   const [logoErrors, setLogoErrors] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<Attainability | "All">("All");
   const [sortKey, setSortKey] = useState<string>("fit");
@@ -756,11 +767,16 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
       const fitB = FIT_ORDER[b.attainability ?? ""] ?? 4;
       const fitCmp = fitA - fitB;
       if (fitCmp !== 0) return sortDir === "asc" ? fitCmp : -fitCmp;
-      // Within same fit group, sort by acceptance rate ascending (lower = harder = more prominent)
+      // Within same fit group: favorites first, then by acceptance rate ascending
+      if (a.is_favorite !== b.is_favorite) return a.is_favorite ? -1 : 1;
       const rateA = a.schools.acceptance_rate ?? 999;
       const rateB = b.schools.acceptance_rate ?? 999;
       return rateA - rateB;
     }
+    // For all other sort keys: favorites still float to top within same fit group
+    const fitA = FIT_ORDER[a.attainability ?? ""] ?? 4;
+    const fitB = FIT_ORDER[b.attainability ?? ""] ?? 4;
+    if (fitA === fitB && a.is_favorite !== b.is_favorite) return a.is_favorite ? -1 : 1;
     const av = getSortValue(a, sortKey);
     const bv = getSortValue(b, sortKey);
     const cmp = typeof av === "string" ? av.localeCompare(bv as string) : (av as number) - (bv as number);
@@ -793,6 +809,16 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, ...fields }),
     });
+  }
+
+  async function toggleFavorite(id: string) {
+    const row = rows.find((r) => r.id === id);
+    if (!row) return;
+    if (!row.is_favorite) {
+      const favoriteCount = rows.filter((r) => r.is_favorite).length;
+      if (favoriteCount >= 3) return; // cap at 3
+    }
+    await updateField(id, { is_favorite: !row.is_favorite });
   }
 
   async function removeSchool(id: string) {
@@ -1189,8 +1215,23 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                   } as React.CSSProperties}
                 >
                   {/* School name (sticky) */}
-                  <td className="sticky left-0 z-10 pl-4 pr-2 py-1.5 align-middle" style={{ backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px" }}>
-                    <div className="flex items-center gap-2 min-w-0">
+                  <td className="sticky left-0 z-10 pl-2 pr-2 py-1.5 align-middle" style={{ backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px" }}>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {/* Favorite star */}
+                      <button
+                        onClick={() => toggleFavorite(row.id)}
+                        title={row.is_favorite ? "Unstar" : rows.filter((r) => r.is_favorite).length >= 3 ? "3 stars used — unstar one first" : "Star this school"}
+                        className="flex-shrink-0 transition-opacity"
+                        style={{
+                          opacity: row.is_favorite ? 1 : undefined,
+                          color: row.is_favorite ? "#F59E0B" : "var(--cr-text-disabled, #C7C3BE)",
+                        }}
+                      >
+                        {row.is_favorite
+                          ? <StarIconSolid className="w-3.5 h-3.5" style={{ color: "#F59E0B" }} />
+                          : <StarIcon className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        }
+                      </button>
                       {/* Favicon logo */}
                       {row.schools.website_url && !logoErrors.has(row.id) ? (
                         // eslint-disable-next-line @next/next/no-img-element
