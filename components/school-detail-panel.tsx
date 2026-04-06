@@ -9,7 +9,6 @@ import {
   ArrowLeftIcon,
   CheckIcon,
   PlusIcon,
-  StarIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 import { createClient } from "@/lib/supabase/client";
@@ -68,8 +67,6 @@ interface SchoolDetailPanelProps {
   onBack?: () => void;
   isOnList?: boolean;
   isFavorite?: boolean;
-  canFavorite?: boolean;
-  onToggleFavorite?: () => void;
 }
 
 // ── Utility ───────────────────────────────────────────────────────────────────
@@ -941,8 +938,6 @@ export default function SchoolDetailPanel({
   onBack,
   isOnList = false,
   isFavorite = false,
-  canFavorite = true,
-  onToggleFavorite,
 }: SchoolDetailPanelProps) {
   const [essays, setEssays] = useState<StructuredEssayPromptRow[]>([]);
   const [essaySummary, setEssaySummary] = useState<EssayRequirementSummaryRow | null>(null);
@@ -1077,18 +1072,8 @@ export default function SchoolDetailPanel({
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <p className="text-base font-semibold leading-tight" style={{ color: "var(--cr-text)" }}>{school.name}</p>
-                {mode === "list" && onToggleFavorite && (
-                  <button
-                    onClick={onToggleFavorite}
-                    title={isFavorite ? "Unstar" : canFavorite ? "Star this school" : "Max 3 stars"}
-                    className="flex-shrink-0 transition-colors"
-                    style={{ color: isFavorite ? "#F59E0B" : "var(--cr-text-disabled, #C7C3BE)" }}
-                  >
-                    {isFavorite
-                      ? <StarIconSolid className="w-5 h-5" style={{ color: "#F59E0B" }} />
-                      : <StarIcon className="w-5 h-5" />
-                    }
-                  </button>
+                {mode === "list" && isFavorite && (
+                  <StarIconSolid className="w-5 h-5 flex-shrink-0" style={{ color: "#F59E0B", pointerEvents: "none" }} />
                 )}
               </div>
               <p className="text-xs mt-0.5" style={{ color: "var(--cr-text-muted)" }}>

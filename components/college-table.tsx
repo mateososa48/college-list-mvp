@@ -32,6 +32,16 @@ import {
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
 
+// Star with a diagonal slash — used for "unstar" action button
+function StarSlashIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+      <line x1="3" y1="3" x2="21" y2="21" strokeWidth={1.5} />
+    </svg>
+  );
+}
+
 const DETAIL_HINT_KEY = "clm_detail_hint_dismissed";
 
 function DetailHintCallout({ onDismiss }: { onDismiss: () => void }) {
@@ -785,6 +795,8 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
     return sortDir === "asc" ? cmp : -cmp;
   });
 
+  const anyFavorited = rows.some((r) => r.is_favorite);
+
   const counts = {
     All: rows.length,
     Reach: rows.filter((r) => r.attainability === "Reach").length,
@@ -1131,7 +1143,10 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b text-left" style={{ borderColor: "var(--cr-border)", backgroundColor: "var(--cr-subtle-bg)" }}>
-                <th className={`sticky left-0 z-10 ${HEADER_CELL_CLASS}`} style={{ color: "var(--cr-text-muted)", backgroundColor: "var(--cr-subtle-bg)", minWidth: "200px", maxWidth: "200px", width: "200px" }}>
+                {anyFavorited && (
+                  <th className="sticky left-0 z-10" style={{ backgroundColor: "var(--cr-subtle-bg)", width: "24px", minWidth: "24px", padding: 0 }} />
+                )}
+                <th className={`sticky z-10 ${HEADER_CELL_CLASS}`} style={{ left: anyFavorited ? "24px" : 0, color: "var(--cr-text-muted)", backgroundColor: "var(--cr-subtle-bg)", minWidth: "200px", maxWidth: "200px", width: "200px" }}>
                   <ColHeader icon={AcademicCapIcon} label="School" />
                 </th>
                 <th style={{ backgroundColor: "var(--cr-subtle-bg)", width: "1px", padding: 0 }} />
@@ -1221,39 +1236,17 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                     backgroundColor: rowBaseColor,
                   } as React.CSSProperties}
                 >
+                  {/* Favorite star indicator (non-clickable, only shown when anyFavorited) */}
+                  {anyFavorited && (
+                    <td className="sticky left-0 z-10 align-middle" style={{ backgroundColor: rowBaseColor, width: "24px", minWidth: "24px", padding: "0 0 0 6px" }}>
+                      {row.is_favorite && (
+                        <StarIconSolid className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#F59E0B", pointerEvents: "none" }} />
+                      )}
+                    </td>
+                  )}
                   {/* School name (sticky) */}
-                  <td className="sticky left-0 z-10 pl-2 pr-2 py-1.5 align-middle" style={{ backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px" }}>
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      {/* Favorite star */}
-                      <div className="relative flex-shrink-0">
-                        <button
-                          onClick={() => toggleFavorite(row.id)}
-                          title={row.is_favorite ? "Unstar" : "Star this school"}
-                          className="flex-shrink-0 transition-opacity"
-                        >
-                          {row.is_favorite
-                            ? <StarIconSolid className="w-3.5 h-3.5" style={{ color: "#F59E0B" }} />
-                            : <StarIcon className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--cr-text-muted)" }} />
-                          }
-                        </button>
-                        {/* Cap toast — appears below the star button */}
-                        {favCapToast === row.id && (
-                          <div
-                            className="absolute left-1/2 z-50 whitespace-nowrap rounded-md px-2 py-1 text-xs"
-                            style={{
-                              top: "calc(100% + 4px)",
-                              transform: "translateX(-50%)",
-                              backgroundColor: "var(--cr-card-bg)",
-                              border: "1px solid var(--cr-border)",
-                              color: "var(--cr-text-muted)",
-                              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                              pointerEvents: "none",
-                            }}
-                          >
-                            Max 3 stars
-                          </div>
-                        )}
-                      </div>
+                  <td className="sticky z-10 pl-4 pr-2 py-1.5 align-middle" style={{ left: anyFavorited ? "24px" : 0, backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px" }}>
+                    <div className="flex items-center gap-2 min-w-0">
                       {/* Favicon logo */}
                       {row.schools.website_url && !logoErrors.has(row.id) ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -1280,7 +1273,7 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                       </button>
                     </div>
                   </td>
-                  {/* Explore + trash (not sticky) */}
+                  {/* Explore + trash + star (not sticky) */}
                   <td className="py-1.5 pr-1 align-middle whitespace-nowrap" style={{ width: "1px" }}>
                     <div className="flex items-center gap-1">
                       <button
@@ -1304,6 +1297,39 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                       >
                         <TrashIcon className="w-3.5 h-3.5" />
                       </button>
+                      {/* Star / unstar button */}
+                      <div className="relative">
+                        <button
+                          onClick={() => toggleFavorite(row.id)}
+                          title={row.is_favorite ? "Unstar" : "Star this school"}
+                          className="p-0.5 rounded transition-colors opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{ color: row.is_favorite ? "#F59E0B" : "var(--cr-text-muted)" }}
+                          onMouseEnter={(e) => { if (!row.is_favorite) e.currentTarget.style.color = "#F59E0B"; }}
+                          onMouseLeave={(e) => { if (!row.is_favorite) e.currentTarget.style.color = "var(--cr-text-muted)"; }}
+                        >
+                          {row.is_favorite
+                            ? <StarSlashIcon className="w-3.5 h-3.5" />
+                            : <StarIcon className="w-3.5 h-3.5" />
+                          }
+                        </button>
+                        {/* Cap toast */}
+                        {favCapToast === row.id && (
+                          <div
+                            className="absolute z-50 whitespace-nowrap rounded-md px-2 py-1 text-xs"
+                            style={{
+                              top: "calc(100% + 4px)",
+                              right: 0,
+                              backgroundColor: "var(--cr-card-bg)",
+                              border: "1px solid var(--cr-border)",
+                              color: "var(--cr-text-muted)",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                              pointerEvents: "none",
+                            }}
+                          >
+                            Max 3 stars
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
 
@@ -1437,8 +1463,6 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
         onClose={() => setPanelOpen(false)}
         onNotesChange={(id, notes) => updateField(id, { notes } as Partial<UserSchoolRow>)}
         isFavorite={selectedRow?.is_favorite ?? false}
-        canFavorite={rows.filter((r) => r.is_favorite).length < 3 || (selectedRow?.is_favorite ?? false)}
-        onToggleFavorite={selectedRow ? () => toggleFavorite(selectedRow.id) : undefined}
       />
       <SchoolDetailPanel
         open={explorePanelOpen}
