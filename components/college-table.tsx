@@ -696,6 +696,8 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
   const [explorePanelOpen, setExplorePanelOpen] = useState(false);
   const [exploreFromSearch, setExploreFromSearch] = useState(false);
   const [showDetailHint, setShowDetailHint] = useState(false);
+  const [favCapToast, setFavCapToast] = useState<string | null>(null);
+  const favCapToastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && !localStorage.getItem(DETAIL_HINT_KEY)) {
@@ -816,7 +818,12 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
     if (!row) return;
     if (!row.is_favorite) {
       const favoriteCount = rows.filter((r) => r.is_favorite).length;
-      if (favoriteCount >= 3) return; // cap at 3
+      if (favoriteCount >= 3) {
+        if (favCapToastTimer.current) clearTimeout(favCapToastTimer.current);
+        setFavCapToast(id);
+        favCapToastTimer.current = setTimeout(() => setFavCapToast(null), 2500);
+        return;
+      }
     }
     await updateField(id, { is_favorite: !row.is_favorite });
   }
@@ -1218,20 +1225,35 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                   <td className="sticky left-0 z-10 pl-2 pr-2 py-1.5 align-middle" style={{ backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px" }}>
                     <div className="flex items-center gap-1.5 min-w-0">
                       {/* Favorite star */}
-                      <button
-                        onClick={() => toggleFavorite(row.id)}
-                        title={row.is_favorite ? "Unstar" : rows.filter((r) => r.is_favorite).length >= 3 ? "3 stars used — unstar one first" : "Star this school"}
-                        className="flex-shrink-0 transition-opacity"
-                        style={{
-                          opacity: row.is_favorite ? 1 : undefined,
-                          color: row.is_favorite ? "#F59E0B" : "var(--cr-text-disabled, #C7C3BE)",
-                        }}
-                      >
-                        {row.is_favorite
-                          ? <StarIconSolid className="w-3.5 h-3.5" style={{ color: "#F59E0B" }} />
-                          : <StarIcon className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        }
-                      </button>
+                      <div className="relative flex-shrink-0">
+                        <button
+                          onClick={() => toggleFavorite(row.id)}
+                          title={row.is_favorite ? "Unstar" : "Star this school"}
+                          className="flex-shrink-0 transition-opacity"
+                        >
+                          {row.is_favorite
+                            ? <StarIconSolid className="w-3.5 h-3.5" style={{ color: "#F59E0B" }} />
+                            : <StarIcon className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: "var(--cr-text-muted)" }} />
+                          }
+                        </button>
+                        {/* Cap toast — appears below the star button */}
+                        {favCapToast === row.id && (
+                          <div
+                            className="absolute left-1/2 z-50 whitespace-nowrap rounded-md px-2 py-1 text-xs"
+                            style={{
+                              top: "calc(100% + 4px)",
+                              transform: "translateX(-50%)",
+                              backgroundColor: "var(--cr-card-bg)",
+                              border: "1px solid var(--cr-border)",
+                              color: "var(--cr-text-muted)",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                              pointerEvents: "none",
+                            }}
+                          >
+                            Max 3 stars
+                          </div>
+                        )}
+                      </div>
                       {/* Favicon logo */}
                       {row.schools.website_url && !logoErrors.has(row.id) ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -1414,6 +1436,9 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
         onNotesChange={(id, notes) => updateField(id, { notes } as Partial<UserSchoolRow>)}
+        isFavorite={selectedRow?.is_favorite ?? false}
+        canFavorite={rows.filter((r) => r.is_favorite).length < 3 || (selectedRow?.is_favorite ?? false)}
+        onToggleFavorite={selectedRow ? () => toggleFavorite(selectedRow.id) : undefined}
       />
       <SchoolDetailPanel
         open={explorePanelOpen}
