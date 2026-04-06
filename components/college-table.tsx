@@ -1143,10 +1143,7 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b text-left" style={{ borderColor: "var(--cr-border)", backgroundColor: "var(--cr-subtle-bg)" }}>
-                {anyFavorited && (
-                  <th className="sticky left-0 z-10" style={{ backgroundColor: "var(--cr-subtle-bg)", width: "22px", minWidth: "22px", padding: 0 }} />
-                )}
-                <th className={`sticky z-10 ${HEADER_CELL_CLASS}`} style={{ left: anyFavorited ? "22px" : 0, color: "var(--cr-text-muted)", backgroundColor: "var(--cr-subtle-bg)", minWidth: "200px", maxWidth: "200px", width: "200px" }}>
+                <th className={`sticky left-0 z-10 ${HEADER_CELL_CLASS}`} style={{ color: "var(--cr-text-muted)", backgroundColor: "var(--cr-subtle-bg)", minWidth: "200px", maxWidth: "200px", width: "200px", paddingLeft: anyFavorited ? "28px" : "16px", transition: "padding-left 0.2s ease" }}>
                   <ColHeader icon={AcademicCapIcon} label="School" />
                 </th>
                 <th style={{ backgroundColor: "var(--cr-subtle-bg)", width: "1px", padding: 0 }} />
@@ -1237,17 +1234,21 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                   } as React.CSSProperties}
                 >
                   {/* Favorite star indicator (non-clickable, only shown when anyFavorited) */}
-                  {anyFavorited && (
-                    <td className="sticky left-0 z-10" style={{ backgroundColor: rowBaseColor, width: "22px", minWidth: "22px", padding: 0 }}>
-                      <div className="flex items-center justify-center h-full w-full">
-                        {row.is_favorite && (
-                          <StarIconSolid className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B", pointerEvents: "none" }} />
-                        )}
-                      </div>
-                    </td>
-                  )}
-                  {/* School name (sticky) */}
-                  <td className="sticky z-10 pl-3 pr-2 py-1.5 align-middle" style={{ left: anyFavorited ? "22px" : 0, backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px", overflow: "hidden" }}>
+                  {/* School name (sticky) — padding-left slides to make room for star */}
+                  <td className="sticky left-0 z-10 pr-2 py-1.5 align-middle relative" style={{ backgroundColor: rowBaseColor, maxWidth: "200px", width: "200px", overflow: "hidden", paddingLeft: anyFavorited ? "28px" : "16px", transition: "padding-left 0.2s ease" }}>
+                    {/* Star indicator — always rendered, fades in/out */}
+                    <StarIconSolid
+                      className="w-3.5 h-3.5 absolute"
+                      style={{
+                        color: "#F59E0B",
+                        pointerEvents: "none",
+                        left: "8px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        opacity: row.is_favorite ? 1 : 0,
+                        transition: "opacity 0.15s ease",
+                      }}
+                    />
                     <div className="flex items-center gap-2 min-w-0">
                       {/* Favicon logo */}
                       {row.schools.website_url && !logoErrors.has(row.id) ? (
@@ -1305,11 +1306,11 @@ export default function CollegeTable({ initialRows, columnPrefs, displayPrefs }:
                           onClick={() => toggleFavorite(row.id)}
                           title={row.is_favorite ? "Unstar" : "Star this school"}
                           className="p-0.5 rounded transition-colors opacity-0 group-hover:opacity-100 transition-opacity hover:bg-stone-100 dark:hover:bg-stone-800"
-                          style={{ color: "var(--cr-text-muted)" }}
+                          style={{ color: "var(--cr-text-muted)", display: "flex", alignItems: "center" }}
                         >
                           {row.is_favorite
-                            ? <StarSlashIcon className="w-4 h-4" />
-                            : <StarIcon className="w-4 h-4" />
+                            ? <StarSlashIcon className="w-3.5 h-3.5 mt-px" />
+                            : <StarIcon className="w-3.5 h-3.5 mt-px" />
                           }
                         </button>
                         {/* Cap toast */}
